@@ -1,0 +1,38 @@
+# Only MongoDB (what `npm run auto` uses):      docker compose up -d
+# Whole project, fully automatic:                docker compose --profile full up --build -d
+#   needs server/.env  (npm run auto:setup creates it)  ->  website + API on http://localhost:5000
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports: ["27017:27017"]
+    volumes: ["smartcare-mongo:/data/db"]
+
+  app:
+    profiles: ["full"]
+    build: .
+    restart: unless-stopped
+    depends_on: [mongo]
+    env_file: [server/.env]
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/smartcare
+      PORT: "5000"
+      AGENT_URL: http://agents:8000
+    ports: ["5000:5000"]
+
+  agents:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: agents/Dockerfile
+    restart: unless-stopped
+    depends_on: [app]
+    env_file: [agents/.env]
+    environment:
+      SMARTCARE_API: http://app:5000/api
+      SMARTCARE_WEB: http://localhost:5000
+      USE_MAILBOX: ${USE_MAILBOX:-false}
+    ports: ["8000:8000"]
+
+volumes:
+  smartcare-mongo:

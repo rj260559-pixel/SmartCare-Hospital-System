@@ -1,0 +1,18 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm --prefix server ci
+      - run: npm run build
+      - name: Syntax check server, scripts and chatbot
+        run: |
+          for f in $(find server/src scripts public/legacy/chatbot.js -name '*.js' -o -name '*.mjs'); do node --check "$f"; done
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python -m compileall -q agents

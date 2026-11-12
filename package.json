@@ -1,0 +1,38 @@
+{
+  "name": "smartcare-react",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "setup": "npm install && npm --prefix server install",
+    "server": "npm --prefix server run dev",
+    "server:start": "npm --prefix server start",
+    "seed": "npm --prefix server run seed",
+    "dev:all": "concurrently -n web,api -c cyan,green \"npm run dev\" \"npm run server\"",
+    "start": "npm run build && npm run server:start",
+    "agents:setup": "pip install -r agents/requirements.txt",
+    "agents": "python agents/run_all.py",
+    "dev:agents": "concurrently -n web,api,agents -c cyan,green,magenta \"npm run dev\" \"npm run server\" \"npm run agents\"",
+    "auto": "node scripts/auto.mjs start",
+    "auto:setup": "node scripts/auto.mjs setup",
+    "doctor": "node scripts/auto.mjs doctor",
+    "docker:up": "docker compose --profile full up --build -d",
+    "docker:down": "docker compose --profile full down"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "canvas-confetti": "^1.9.4",
+    "html5-qrcode": "^2.3.8",
+    "lucide-react": "^1.52.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.4",
+    "vite": "^5.4.21"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
